@@ -1,4 +1,5 @@
 # calender_gas
-*make　calender by Google Apps Script
-*5project calender
+make　calender by Google Apps Script
+
+5project calender
 
