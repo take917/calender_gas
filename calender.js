@@ -1,5 +1,8 @@
 // 完成版
-function newcalender() {
+function componetscalender() {
+  // カレンダーを保存する列を指定する
+    sheetkey ={introduction:"M",relation:"Q",revue:"AP",sett:"AX",patient:"BB"}
+  
     const sheet = SpreadsheetApp.getActiveSheet();                  //シートをアクティブにする                                        
     const lastRow = sheet.getLastRow();                             //最終行を取得
     const contents = sheet.getRange(`A4:BE${lastRow}`).getValues()  //範囲を指定し、データを取得
@@ -60,83 +63,64 @@ function newcalender() {
       // introduction project
       if(introductionCheck){
       }else{
-        var date = new Date(introductionDay);
-        if(introductionStartTime ==""|| introductionEndTime==""){ // 時間が未定の場合、終日でカレンダーを作成
-          calendar.createAllDayEvent(introductionTitle,date)
-        }else{//日時データを関数に投げて、日本時間に修正 イベントIDを取得し、保管予定 
-          const [startDateobj,endDateobj]  = timeDate(introductionDay,introductionStartTime,introductionEndTime)
-          introductionEvent = calendar.createEvent(introductionTitle,startDateobj,endDateobj,options).getId()
-        }
-      sheet.getRange(`M${i+4}`).setValue("TRUE"); // 作成したカレンダーをTRUE,FALSEで作成するか否かを判断
-      sheet.getRange(`BJ${i+4}`).setValue(introductionEvent); // 作成カレンダーのイベントIDの仮置き
+        components(introductionDay,introductionStartTime,introductionEndTime,introductionTitle,sheetkey.introduction,calendar,sheet,i,options)
       }
   
-    //relation project
+      //relation project
       if(relationCheck){
       }else{
-        var date = new Date(relationDay);
-        if(relationStartTime ==""|| relationEndTime==""){
-          calendar.createAllDayEvent(relationTitle,date)
-        }else{
-          const [startDateobj,endDateobj]  = timeDate(relationDay,relationStartTime,relationEndTime)
-          relationEvent = calendar.createEvent(relationTitle,startDateobj,endDateobj,options).getId()
-        }
-        sheet.getRange(`Q${i+4}`).setValue("TRUE");
+        components(relationDay,relationStartTime,relationEndTime,relationTitle,sheetkey.relation,calendar,sheet,i,options)
       }
   
-    //revue project
+      //revue project
       if(revueCheck){    
       }else{
-        var date = new Date(revueDay);
-        if(revueStartTime ==""|| revueEndTime==""){
-          calendar.createAllDayEvent(revueTitle,date)
-        }else{
-          const [startDateobj,endDateobj]  = timeDate(revueDay,revueStartTime,revueEndTime)
-          revueEvent = calendar.createEvent(revueTitle,startDateobj,endDateobj,options).getId()
-        }
-        sheet.getRange(`AP${i+4}`).setValue("TRUE");
+        components(revueDay,revueStartTime,revueEndTime,revueTitle,sheetkey.revue,calendar,sheet,i,options)
       }
   
-    // 　setMove project
-    if(setCheck){
+      //setMove project
+      if(setCheck){
       }else{
-        var date = new Date(setDay);
-        if(setStartTime ==""|| setEndTime==""){
-          calendar.createAllDayEvent(setTitle,date)
-        }else{
-          const [startDateobj,endDateobj]  = timeDate(setDay,setStartTime,setEndTime)
-          revueEvent = calendar.createEvent(setTitle,startDateobj,endDateobj,optionMine).getId()
-        }
-        sheet.getRange(`AX${i+4}`).setValue("TRUE");
+        components(setDay,setStartTime,setEndTime,setTitle,sheetkey.sett,calendar,sheet,i,options)
       }
   
-    // patient project
-    if(intputPatientCheck){
-        }else{
-          var date = new Date(intputPatientDay);
-          if(intputPatientStartTime ==""|| intputPatientEndTime==""){
-          calendar.createAllDayEvent(setTitle,date)
-        }else{
-          const [startDateobj,endDateobj]  = timeDate(intputPatientDay,intputPatientStartTime,intputPatientEndTime)
-          revueEvent = calendar.createEvent(patientTitle,startDateobj,endDateobj,optionMine).getId()
-        }
-        sheet.getRange(`BB${i+4}`).setValue("TRUE");
+      // patient project
+      if(intputPatientCheck){
+      }else{
+        components(intputPatientDay,intputPatientStartTime,intputPatientEndTime,patientTitle,sheetkey.patient,calendar,sheet,i,options)
       }
     }
   }
   
+  // カレンダーに登録をコンポーネント化して使い回し
+  function components(day,startTime,endTime,title,action,calendar,sheet,i,options) {
+    var date = new Date(day);
+      if(!day){
+      }else{
+      if(startTime ==""|| endTime==""){ // 時間が未定の場合、終日でカレンダーを作成
+        calendar.createAllDayEvent(title,date)
+      }else{//日時データを関数に投げて、日本時間に修正 イベントIDを取得し、保管予定 
+        const [startDateobj,endDateobj]  = timeDate(day,startTime,endTime)
+        introductionEvent = calendar.createEvent(title,startDateobj,endDateobj,options).getId()
+      }
+        sheet.getRange(`${action}${i+4}`).setValue("TRUE"); // 作成したカレンダーをTRUE,FALSEで作成するか否かを判断
+      // sheet.getRange(`BJ${i+4}`).setValue(introductionEvent); // 作成カレンダーのイベントIDの仮置き
+        }
+  }
   
-  
+  // 時間編集の関数
   function timeDate(day,start,end){
-        var startDateobj = new Date(day);
-        startDateobj.setHours(start.getHours())
-        startDateobj.setMinutes(start.getMinutes())
-        
-        var endDateobj = new Date(day);
-        endDateobj.setHours(end.getHours())
-        endDateobj.setMinutes(end.getMinutes())
+    // スタート時間の編集
+    var startDateobj = new Date(day);
+    startDateobj.setHours(start.getHours())
+    startDateobj.setMinutes(start.getMinutes())
+    
+    // 終了時間の編集
+    var endDateobj = new Date(day);
+    endDateobj.setHours(end.getHours())
+    endDateobj.setMinutes(end.getMinutes())
   
-        return [startDateobj,endDateobj]
+    return [startDateobj,endDateobj]
   
   }
   
